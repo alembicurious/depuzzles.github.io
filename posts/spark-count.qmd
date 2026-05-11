@@ -1,0 +1,12 @@
+---
+title: "Why Spark count() can hurt performance"
+date: today
+categories: [spark, databricks]
+---
+
+# The trap
+
+`count()` is an action.
+
+```python
+df.count()

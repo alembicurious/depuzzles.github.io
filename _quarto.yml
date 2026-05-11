@@ -2,12 +2,12 @@ project:
   type: website
 
 website:
-  title: "depuzzles-blog"
+  title: "depuzzles"
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - posts.qmd
 
 format:
   html:
@@ -16,6 +16,12 @@ format:
       - brand
     css: styles.css
     toc: true
+    code-copy: true
+    code-overflow: wrap
+
+execute:
+  freeze: auto
+
 
 
 
