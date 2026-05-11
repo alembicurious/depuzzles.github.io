@@ -4,5 +4,8 @@
   },
   "about.qmd": {
     "about.html": "0fd755a2"
+  },
+  "posts/spark-count.qmd": {
+    "spark-count.html": "6fd4f65c"
   }
 }

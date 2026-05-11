@@ -7,6 +7,13 @@
     "text": "About this site"
   },
   {
+    "objectID": "posts/spark-count.html",
+    "href": "posts/spark-count.html",
+    "title": "Why Spark count() can hurt performance",
+    "section": "",
+    "text": "The trap\ncount() is an action.\n```python df.count()"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "depuzzles-blog",
