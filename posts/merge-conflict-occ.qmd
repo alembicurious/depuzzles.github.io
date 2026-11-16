@@ -1,0 +1,51 @@
+---
+title: "Why two MERGE jobs on different partitions can still conflict"
+date: 2026-11-16
+categories: [delta-lake, databricks, data-engineering]
+---
+
+**Why can two MERGE jobs processing different partitions still conflict?**
+
+Imagine two jobs running concurrently against a Delta table partitioned by `partition_date`:
+
+- Job A: MERGE data for July 5.
+- Job B: MERGE data for July 6.
+
+Both use the same condition:
+
+```sql
+ON target.user_id = source.user_id
+AND target.partition_date = source.partition_date
+```
+
+Different dates, different partitions. No conflicts expected, right?
+
+**Not necessarily.**
+
+Here's the catch: there's a difference between the *logical* and *physical* read.
+
+Logically, Job A only needs July 5 data. But unless Spark effectively prunes the target partitions, it may scan files from July 6 as well.
+
+Now imagine this sequence:
+
+1. Both jobs start reading the target table.
+2. Job B commits new files to the July 6 partition.
+3. Job A finishes processing and attempts to commit.
+4. Delta's Optimistic Concurrency Control (OCC) checks whether any concurrent changes conflict with Job A's recorded read dependencies.
+5. If Job B's new files overlap Job A's read scope, Job A fails with `ConcurrentAppendException`.
+
+**The takeaway:** Filtering your source to one partition doesn't guarantee that your MERGE reads only that target partition.
+
+**The solution:** Make the target partition filter explicit:
+
+```sql
+AND target.partition_date = DATE '2025-07-05'
+```
+
+This restricts the target read scope and allows independent MERGE operations on disjoint partitions to run concurrently without this conflict.
+
+Delta Lake documents this exact scenario and solution:
+
+<https://docs.delta.io/concurrency-control/#concurrentappendexception>
+
+#DeltaLake #Databricks #DataEngineering
